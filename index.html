@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Estimate GAA pitch dimensions by scaling the official full-size pitch ranges to your number of players."
+    >
+    <meta name="theme-color" content="#f5f4ee">
+    <title>GAA Pitch Size Calculator</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #17372b;
+        background: #f5f4ee;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        padding: 48px 20px;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(ellipse at 12% 8%, rgb(197 216 174 / 40%), transparent 32rem),
+          #f5f4ee;
+      }
+
+      main {
+        width: min(100%, 680px);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        color: #467456;
+        font-size: 0.75rem;
+        font-weight: 750;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 7vw, 3.6rem);
+        letter-spacing: -0.055em;
+        line-height: 1.05;
+      }
+
+      .intro {
+        max-width: 530px;
+        margin: 16px 0 28px;
+        color: #52675b;
+        font-size: 1.05rem;
+        line-height: 1.65;
+      }
+
+      .calculator {
+        overflow: hidden;
+        border: 1px solid #dce2d7;
+        border-radius: 20px;
+        background: #fffefa;
+        box-shadow: 0 18px 50px rgb(27 55 39 / 9%);
+      }
+
+      .input-panel {
+        padding: clamp(22px, 5vw, 34px);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+
+      .input-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      input {
+        width: min(100%, 180px);
+        min-height: 58px;
+        padding: 10px 14px;
+        border: 1px solid #c9d5c7;
+        border-radius: 10px;
+        background: #fff;
+        color: #17372b;
+        font: inherit;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      input:focus-visible {
+        outline: 3px solid #9cc9a5;
+        outline-offset: 2px;
+      }
+
+      .input-hint {
+        color: #64766a;
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+
+      .error {
+        min-height: 1.3em;
+        margin: 8px 0 0;
+        color: #a1332d;
+        font-size: 0.875rem;
+      }
+
+      .results {
+        padding: clamp(22px, 5vw, 34px);
+        background: #eaf1e6;
+      }
+
+      .results-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px 20px;
+        margin-bottom: 18px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .scale {
+        color: #52675b;
+        font-size: 0.9rem;
+      }
+
+      .dimensions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .dimension {
+        padding: 18px;
+        border: 1px solid #d4e0d0;
+        border-radius: 12px;
+        background: #fffefa;
+      }
+
+      .dimension-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #52675b;
+        font-size: 0.82rem;
+        font-weight: 650;
+      }
+
+      .dimension-value {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+        font-weight: 750;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+      }
+
+      .units {
+        color: #52675b;
+        font-size: 0.92rem;
+        font-weight: 550;
+      }
+
+      .note {
+        margin: 18px 0 0;
+        color: #52675b;
+        font-size: 0.85rem;
+        line-height: 1.55;
+      }
+
+      footer {
+        margin-top: 20px;
+        color: #617267;
+        font-size: 0.85rem;
+        line-height: 1.6;
+      }
+
+      a {
+        color: #286541;
+        font-weight: 650;
+        text-underline-offset: 3px;
+      }
+
+      @media (max-width: 420px) {
+        .dimensions {
+          grid-template-columns: 1fr;
+        }
+
+        .input-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Made for your game</p>
+      <h1>GAA pitch size calculator</h1>
+      <p class="intro">
+        Find a suggested pitch size for your team. Enter your player count and
+        the dimensions will scale in proportion to a full 15-player team.
+      </p>
+
+      <section class="calculator" aria-label="Pitch size calculator">
+        <div class="input-panel">
+          <label for="players">How many players will be on your team?</label>
+          <div class="input-row">
+            <input
+              id="players"
+              name="players"
+              type="number"
+              step="any"
+              value="15"
+              inputmode="decimal"
+              aria-describedby="player-hint player-error"
+            >
+            <span id="player-hint" class="input-hint">
+              A full team has 15 players. Decimal values work for proportional estimates.
+            </span>
+          </div>
+          <p id="player-error" class="error" aria-live="polite"></p>
+        </div>
+
+        <div class="results" aria-live="polite" aria-atomic="true">
+          <div class="results-heading">
+            <h2>Suggested dimensions</h2>
+            <span id="scale" class="scale">Full-size team</span>
+          </div>
+          <div class="dimensions">
+            <div class="dimension">
+              <span class="dimension-label">Width</span>
+              <span class="dimension-value">
+                <span id="width-range">80–90</span>
+                <span class="units">m</span>
+              </span>
+            </div>
+            <div class="dimension">
+              <span class="dimension-label">Length</span>
+              <span class="dimension-value">
+                <span id="length-range">130–145</span>
+                <span class="units">m</span>
+              </span>
+            </div>
+          </div>
+          <p class="note">
+            These are proportional estimates based on the official full-size
+            ranges, not official dimensions for smaller teams.
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        Full-size reference: 80–90 m wide and 130–145 m long for 15 players.
+        Source: <a
+          href="https://www.gaa.ie/api/images/image/upload/prd/v7cjvfyfh6kdadozonrx.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+        >GAA Official Guide, page 4 (PDF)</a>.
+      </footer>
+    </main>
+
+    <script>
+      const playerInput = document.querySelector("#players");
+      const playerError = document.querySelector("#player-error");
+      const widthRange = document.querySelector("#width-range");
+      const lengthRange = document.querySelector("#length-range");
+      const scaleLabel = document.querySelector("#scale");
+
+      function formatDimension(value) {
+        return Number.isInteger(value)
+          ? String(value)
+          : value.toFixed(1).replace(/\.0$/, "");
+      }
+
+      function updateDimensions() {
+        const players = Number(playerInput.value);
+        const isValid = Number.isFinite(players) && players > 0;
+        playerInput.setAttribute("aria-invalid", String(!isValid));
+
+        if (!isValid) {
+          playerError.textContent = "Enter a number of players greater than zero.";
+          widthRange.textContent = "—";
+          lengthRange.textContent = "—";
+          scaleLabel.textContent = "Enter a valid player count";
+          return;
+        }
+
+        playerError.textContent = "";
+        const scale = players / 15;
+        widthRange.textContent = `${formatDimension(80 * scale)}–${formatDimension(90 * scale)}`;
+        lengthRange.textContent = `${formatDimension(130 * scale)}–${formatDimension(145 * scale)}`;
+        scaleLabel.textContent = `${formatDimension(scale * 100)}% of a full-size team`;
+      }
+
+      playerInput.addEventListener("input", updateDimensions);
+      updateDimensions();
+    </script>
+  </body>
+</html>
